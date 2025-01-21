@@ -1,2 +1,2 @@
 # ProjectEuler
-Solving problems of projecteuler.net in OCaml
+Solving problems of [projecteuler.net](projecteuler.net) in OCaml
