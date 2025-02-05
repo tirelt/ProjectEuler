@@ -1,11 +1,3 @@
-let rec insert a lst =
-  if a = 0 then lst else insert (a/10) ((a mod 10)::lst)
-let rec transform lst new_lst acc ret = 
-  match lst with
-  [] -> (match new_lst with [] -> insert acc ret| []::q -> insert acc ret | _ -> transform new_lst [] (acc/10) ((acc mod 10)::ret))
-  |h::q -> (match h with [] -> ret | a::b -> transform q (b::new_lst) (acc+int_of_char a - int_of_char '0') ret)
-
-
 let input = "37107287533902102798797998220837590246510135740250
 46376937677490009712648124896970078050417018260538
 74324986199524741059474233309513058123726617309629
@@ -106,12 +98,27 @@ let input = "37107287533902102798797998220837590246510135740250
 72107838435069186155435662884062257473692284509516
 20849603980134001723930671666823555245252804609722
 53503534226472524250874054075591789781264330331690"
- 
+
+ let rec insert a lst =
+  if a = 0 then lst else insert (a/10) ((a mod 10)::lst)
+
+let rec transform new_lst acc ret lst = 
+  match lst with
+  [] -> (match new_lst with [] -> insert acc ret| []::q -> insert acc ret | _ -> transform [] (acc/10) ((acc mod 10)::ret) new_lst) 
+  |h::q -> (match h with [] -> ret | a::b -> transform (b::new_lst) (acc+int_of_char a - int_of_char '0') ret q) 
+
+let rec extract n new_lst lst = 
+  if n = 0 then new_lst else begin
+  match lst with 
+  [] -> new_lst
+  |h::q -> extract (n-1) (h::new_lst) q
+  end
+
 let rec list_to_int acc = function
   [] -> acc
   |h::q -> list_to_int (acc*10+h) q
 
 let _ = 
-  let formated_input = String.split_on_char '\n' input |> List.map (fun str -> String.to_seq str |> List.of_seq |> List.rev) in
-  let result = transform formated_input [] 0 [] |> list_to_int 0 in
-  Printf.printf "%d\n" result 
+  let ret = String.split_on_char '\n' input |> List.map (fun str -> String.to_seq str |> List.of_seq |> List.rev) |> transform [] 0 [] 
+    |> extract 10 [] |> List.rev |> list_to_int 0 in 
+  Printf.printf "%d\n" ret
