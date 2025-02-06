@@ -9,4 +9,6 @@ let rec test n max_ite n_max =
     if ite > max_ite then test (n+1) ite n else  test (n+1) max_ite n_max 
   end
 
-let a = test 1 0 0
+let _ =   
+  Printf.printf "%d\n" (test 1 0 0)
+ 
