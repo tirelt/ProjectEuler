@@ -33,7 +33,6 @@ fn write_number(n: u32,map: &HashMap<u32,&str>)->String{
     res
 }
 fn main() {
-    println!("Hello, world!");
     let map: HashMap<u32, &str> = HashMap::from([
         (0, "zero"),
         (1, "one"),
@@ -64,7 +63,7 @@ fn main() {
         (80, "eighty"),
         (90, "ninety"),
     ]);
-    println!("test: {}",write_number(516,&map));
+    //println!("test: {}",write_number(516,&map));
     let res: u32 = (1..=1000)
                     .map(|x| write_number(x,&map)
                         .chars()
