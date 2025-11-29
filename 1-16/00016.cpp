@@ -9,9 +9,9 @@ using std::endl;
 
 void multiply(list<int>& lst, int fact){
     int temp,carry=0;
-    for(auto ite=lst.begin();ite!=lst.end();++ite){
-        temp = *ite * fact + carry;
-        *ite = temp % 10;
+    for(auto& e:lst){
+        temp = e * fact + carry;
+        e = temp % 10;
         carry = temp/10;
     }
     if(carry) lst.push_back(carry);

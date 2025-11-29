@@ -1,7 +1,9 @@
 # ProjectEuler
 
-Solving problems of [projecteuler.net](projecteuler.net) in OCaml
+Solving problems of [projecteuler.net](projecteuler.net).
 
+# 1 - 16
+The solutions are in `OCaml`.
 The project is so simple that we prefered not to use `dune`. And simply rin `#use "<name.ml>"` in `utop` or to manually compile.
 
 ```bash
@@ -10,3 +12,8 @@ utop
 #use "00001.ml";;
 #quit;;
 ```
+
+# 17 onward
+Implemented in `Rust`.
+
+
