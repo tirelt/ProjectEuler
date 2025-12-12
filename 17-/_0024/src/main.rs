@@ -1,9 +1,14 @@
-fn main() {
-    let mut curr = 1;
-    let mut fact = vec![1; 11];
-    for i in 1..=10 {
-        curr = curr * i;
-        fact[i] = curr;
+fn get_fact(n: u64, table: &mut Vec<u64>) {
+    match n {
+        0 => table.push(1),
+        k => {
+            get_fact(k - 1, table);
+            table.push(table.last().unwrap() * k);
+        }
     }
+}
+fn main() {
+    let mut table = Vec::new();
+    let test = get_fact(10, &mut table);
     println!("TEst");
 }
