@@ -12,8 +12,8 @@ fn main() {
         names.push(name);
     }
     names.sort();
-    let res: i64 = (1..names.len())
-        .map(|i| alpha_value(&names[i]) * (1 + 1))
+    let res: i64 = (0..names.len())
+        .map(|i| alpha_value(&names[i]) * (i + 1) as i64)
         .sum();
     println!("Res: {res}");
 }
