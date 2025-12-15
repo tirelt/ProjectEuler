@@ -20,7 +20,7 @@ fn main() {
     let mut max = 0;
     for b in b_values {
         //let min_a = -2 * ((b as f64).sqrt() as i32) - 1;
-        for a in -1000..=1000 {
+        for a in -999..1000 {
             let mut n = 0;
             let calc = |x| x * x + a * x + b;
             let mut vals = Vec::new();
@@ -40,7 +40,7 @@ fn main() {
             }
             if n > max {
                 max = n;
-                res = b * (a as i32).abs();
+                res = b * a;
             }
         }
     }
