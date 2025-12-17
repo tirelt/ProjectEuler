@@ -24,10 +24,11 @@ fn bfs(
     res
 }
 fn main() {
+    let value = 500;
     let coins = vec![200, 100, 50, 20, 10, 5, 2, 1];
     let mut memo: HashMap<(i32, usize), u128> = HashMap::new();
     let start = Instant::now();
-    let res = bfs(200, 0, &coins, &mut memo);
+    let res = bfs(value, 0, &coins, &mut memo);
     let duration = start.elapsed();
     println!(
         "Res: {res} - {:.0} μs",
