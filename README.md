@@ -1,6 +1,6 @@
 # ProjectEuler
 
-Solving problems of [projecteuler.net](projecteuler.net).
+Solving problems of [projecteuler.net](https://projecteuler.net/).
 
 # 1 - 16
 The solutions are in `OCaml`.
@@ -14,6 +14,7 @@ utop
 ```
 
 # 17 onward
-Implemented in `Rust`.
+
+Implemented in `Rust` using `cargo`.
 
 
