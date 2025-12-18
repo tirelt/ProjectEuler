@@ -1,4 +1,3 @@
-use std::cmp::min;
 use std::collections::{HashSet, VecDeque};
 
 fn find_primes(n: u64, primes: &mut Vec<u64>) {
@@ -20,12 +19,9 @@ fn main() {
     let mut primes = vec![2];
     find_primes(1_000_000, &mut primes);
     let mut res = 0;
-    let consecutive = 3;
+    let consecutive: u64 = 4;
     let mut all_divisors = VecDeque::new();
     for num in 1..1_000_000 {
-        if num == 646 {
-            println!("debug");
-        }
         let mut divisors = HashSet::new();
         for j in 0..primes.len() {
             let p = primes[j];
@@ -36,27 +32,15 @@ fn main() {
                 divisors.insert(p);
             }
         }
-        all_divisors.push_back(divisors);
-        if all_divisors.len() >= consecutive {
-            let mut n_divisors = 2;
-            for d in all_divisors.iter() {
-                n_divisors = min(n_divisors, d.len());
-            }
-            let mut intersection = all_divisors[0].clone();
-            for j in 1..consecutive {
-                intersection = intersection
-                    .intersection(&all_divisors[j])
-                    .cloned()
-                    .collect();
-            }
+        all_divisors.push_back(divisors.len() as u64);
+        if all_divisors.len() as u64 >= consecutive {
+            let n_divisors = all_divisors.iter().min().unwrap().clone();
             all_divisors.pop_front();
-            if n_divisors < 2 {
+            if n_divisors < consecutive {
                 continue;
             }
-            if intersection.len() != 0 {
-                res = num;
-                break;
-            }
+            res = num - consecutive + 1;
+            break;
         }
     }
     println!("Res: {res}");
