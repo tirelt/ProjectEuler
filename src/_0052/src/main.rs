@@ -22,7 +22,7 @@ fn main() {
                 }
             }
             res = i;
-            //:break;
+            break;
         }
     }
     println!("Res: {res}");
