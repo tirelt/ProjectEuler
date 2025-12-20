@@ -1,36 +1,35 @@
-fn gcd(mut a: u128, mut b: u128) -> u128 {
-    if a == b {
-        return a;
-    }
-    if b < a {
+fn add_(mut a: Vec<u32>, mut b: Vec<u32>) -> Vec<u32> {
+    if a.len() > b.len() {
         let temp = a;
         a = b;
         b = temp;
     }
-    if a == 0 {
-        return b;
+    let mut keep = 0;
+    for i in 0..a.len() {
+        let temp = a[i] + b[i] + keep;
+        keep = temp / 10;
+        b[i] = temp % 10;
     }
-    gcd(b % a, a)
-}
-fn n_digit(n: u128) -> u32 {
-    (n as f64).log10() as u32
+    for i in a.len()..b.len() {
+        let temp = b[i] + keep;
+        keep = temp / 10;
+        b[i] = temp % 10;
+    }
+    while keep > 0 {
+        b.push(keep % 10);
+        keep /= 10;
+    }
+    b
 }
 fn main() {
-    let mut n: u128 = 3;
-    let mut d: u128 = 2;
+    let mut n: Vec<u32> = vec![3];
+    let mut d: Vec<u32> = vec![2];
     let mut res = 0;
-    for k in 2..=1_000 {
-        n = n + d;
-        let temp = d;
-        d = n;
-        n = temp + d;
-        let g = gcd(n, d);
-        if g > 1 {
-            println!("Hello, world!");
-        }
-        n = n / g;
-        d = d / g;
-        if n_digit(n) > n_digit(d) {
+    for _ in 2..=1_000 {
+        let temp = d.clone();
+        d = add_(n, d);
+        n = add_(d.clone(), temp);
+        if n.len() > d.len() {
             res += 1;
         }
     }
