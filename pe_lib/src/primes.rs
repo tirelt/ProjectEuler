@@ -38,15 +38,16 @@ pub fn is_prime_sqrt(n: u64) -> bool {
 }
 
 fn pow_mod(mut a: u64, mut n: u64, m: u64) -> u64 {
+    // computes a^n mod m
     let mut res: u64 = 1;
     a %= m;
     while n > 0 {
-        //bitwise and to check the last bit of n
+        //bitwise AND to check the last bit of n and hence its parity
         if n & 1 == 1 {
             res = res.wrapping_mul(a) % m;
         }
         a = a.wrapping_mul(a) % m;
-        // bitwise shift right by 1
+        // bitwise right shift  by 1 to divide by 2
         n >>= 1;
     }
     res
@@ -69,7 +70,9 @@ pub fn is_prime_mr(n: u64) -> bool {
         return n == 2; // only 2 is prime among evens and <2
     }
     if n >= 1u64 << 32 {
-        panic!("The algo is deterministic for numbers < 4,759,123,141 but our implementation using u64 restricts for numbers < 2^32");
+        panic!(
+            "The algo is deterministic for numbers < 4,759,123,141 but our implementation using u64 restricts for numbers < 2^32"
+        );
     }
     // Check for small primes
     if n < 1000 {
