@@ -36,3 +36,61 @@ pub fn is_prime_sqrt(n: u64) -> bool {
     }
     return true;
 }
+
+fn pow_mod(mut a: u64, mut n: u64, m: u64) -> u64 {
+    let mut res: u64 = 1;
+    a %= m;
+    while n > 0 {
+        //bitwise and to check the last bit of n
+        if n & 1 == 1 {
+            res = res.wrapping_mul(a) % m;
+        }
+        a = a.wrapping_mul(a) % m;
+        // bitwise shift right by 1
+        n >>= 1;
+    }
+    res
+}
+fn witness(a: u64, n: u64, d: u64, s: u64) -> bool {
+    let mut value = pow_mod(a, d, n);
+    if value == 1 || value == n - 1 {
+        return true;
+    }
+    for _ in 1..s {
+        value = (value * value) % n;
+        if value == n - 1 {
+            return true;
+        }
+    }
+    false
+}
+pub fn is_prime_mr(n: u64) -> bool {
+    if n <= 2 || n & 1 == 0 {
+        return n == 2; // only 2 is prime among evens and <2
+    }
+    if n >= 1u64 << 32 {
+        panic!("The algo is deterministic for numbers < 4,759,123,141 but our implementation using u64 restricts for numbers < 2^32");
+    }
+    // Check for small primes
+    if n < 1000 {
+        for p in [
+            2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+        ]
+        .iter()
+        {
+            if n == *p {
+                return true;
+            }
+            if n % p == 0 {
+                return false;
+            }
+        }
+    }
+    let mut d = n - 1;
+    let mut s = 0;
+    while d & 1 == 0 {
+        s += 1;
+        d >>= 1;
+    }
+    witness(2, n, d, s) && witness(7, n, d, s) && witness(61, n, d, s)
+}

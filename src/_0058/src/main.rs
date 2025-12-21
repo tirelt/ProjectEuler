@@ -1,9 +1,10 @@
-use pe_lib::primes::is_prime_from_primes;
+//use pe_lib::primes::is_prime_from_primes;
 //use pe_lib::primes::is_prime_sqrt;
+use pe_lib::primes::is_prime_mr;
 use std::time::Instant;
 fn main() {
     let now = Instant::now();
-    let mut primes = vec![2 as u64];
+    //let mut primes = vec![2 as u64];
     let mut curr: u64 = 9;
     let mut n_primes = 3;
     let mut n_numbers = 5;
@@ -18,7 +19,12 @@ fn main() {
                 n_primes += 1;
             }
             */
+            /*
             if is_prime_from_primes(new_n, &mut primes) {
+                n_primes += 1;
+            }
+            */
+            if is_prime_mr(new_n) {
                 n_primes += 1;
             }
         }
