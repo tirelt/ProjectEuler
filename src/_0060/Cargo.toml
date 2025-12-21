@@ -1,0 +1,7 @@
+[package]
+name = "_0060"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pe_lib = {path = "../../pe_lib"}

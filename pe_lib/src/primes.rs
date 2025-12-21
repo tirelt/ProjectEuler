@@ -1,4 +1,36 @@
+pub fn find_primes_sieve(n: u64) -> Vec<u64> {
+    let n = n as usize;
+    if n < 2 {
+        return vec![];
+    }
+    let mut is_prime = vec![true; n + 1];
+    is_prime[0] = false;
+    is_prime[1] = false;
+    is_prime[2] = true;
+
+    for i in (3..=n).step_by(2) {
+        if is_prime[i] {
+            for j in (i * i..=n).step_by(i * 2) {
+                is_prime[j] = false;
+            }
+        }
+        if (i as u64) * (i as u64) > n as u64 {
+            break;
+        }
+    }
+
+    let mut primes = vec![2];
+    for i in (3..=n).step_by(2) {
+        if is_prime[i] {
+            primes.push(i as u64);
+        }
+    }
+    primes
+}
 pub fn find_primes(n: u64, primes: &mut Vec<u64>) {
+    if primes.len() == 0 {
+        primes.push(2);
+    }
     'outer: for num in (1 + primes.last().unwrap())..=n {
         let sqrt = (num as f64).sqrt() as u64 + 1;
         for p in primes.iter() {
