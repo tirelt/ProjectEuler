@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+use std::time::Instant;
+
 fn find_frac_representation(n: u64) -> (Vec<u64>, Vec<u64>) {
     let mut memo: HashMap<(u64, u64), u64> = HashMap::new();
     let mut sqrt = (n as f64).sqrt() as u64;
@@ -14,7 +16,7 @@ fn find_frac_representation(n: u64) -> (Vec<u64>, Vec<u64>) {
         let new_dem = n - num_sub.pow(2);
         counter += 1;
         if new_dem % dem != 0 {
-            println!("Can get here ?!");
+            panic!("Can get here ?!");
         }
         dem = new_dem / dem;
         sqrt = (((n as f64).sqrt() + num_sub as f64) / dem as f64) as u64;
@@ -26,6 +28,7 @@ fn find_frac_representation(n: u64) -> (Vec<u64>, Vec<u64>) {
     (coeffs.into_iter().take(start_cycle_index).collect(), cycle)
 }
 fn main() {
+    let start = Instant::now();
     let mut res = 0;
     for i in 2..=10_000 {
         let (_coeffs, cycle) = find_frac_representation(i);
@@ -35,4 +38,5 @@ fn main() {
         //println!("sqrt({i}) = {:?} - {:?}", coeffs, cycle);
     }
     println!("Res: {res}");
+    println!("Duration: {}ms", start.elapsed().as_millis())
 }
