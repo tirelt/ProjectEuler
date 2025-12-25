@@ -1,7 +1,10 @@
 use std::ops::{Add, Mul};
+
+#[derive(Clone, Debug)]
 pub struct BigNum {
-    digits: Vec<u64>,
+    pub digits: Vec<u64>,
 }
+
 impl BigNum {
     pub fn new() -> Self {
         BigNum { digits: vec![0] }
@@ -29,17 +32,20 @@ impl Add for &BigNum {
         }
         let mut keep = 0;
         for i in 0..small.len() {
-            keep += res[i] + small[i];
-            res[i] = keep % 10;
-            keep /= 10;
+            res[i] += small[i] + keep;
+            keep = res[i] / 10;
+            res[i] %= 10;
         }
-        for i in small.len()..res.len() {
-            keep += res[i];
-            res[i] += keep % 10;
-        }
-        while keep > 0 {
-            res.push(keep % 10);
-            keep /= 10;
+        if keep > 0 {
+            for i in small.len()..res.len() {
+                res[i] += keep;
+                keep = res[i] / 10;
+                res[i] %= 10;
+            }
+            while keep > 0 {
+                res.push(keep % 10);
+                keep /= 10;
+            }
         }
         BigNum { digits: res }
     }

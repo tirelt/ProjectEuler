@@ -1,3 +1,4 @@
+use pe_lib::big_numbers::BigNum;
 use std::time::Instant;
 
 fn exp_frac_representation(n: usize) -> Vec<i64> {
@@ -18,20 +19,19 @@ fn exp_frac_representation(n: usize) -> Vec<i64> {
     coeffs
 }
 
-fn construct_frac(representation: Vec<i64>) -> (Vec<i64>, Vec<i64>) {
-    let mut num: Vec<u8> = vec![1];
-    let mut den = vec![representation[0] as u8];
-    for i in 2..representation.len() {
-        let last_num = num.last().unwrap().to_owned();
-        let last_den = den.last().unwrap().to_owned();
-        num.push(last_den);
-        den.push(representation[i] * last_den + last_num);
+fn construct_frac(representation: Vec<i64>) -> (BigNum, BigNum) {
+    let mut num = BigNum::new_from_u64(1);
+    let mut den = BigNum::new_from_u64(representation[0] as u64);
+    for i in 1..representation.len() {
+        let new_num = den.clone();
+        den = &(representation[i] as u64 * &den) + &num;
+        num = new_num;
     }
     (num, den)
 }
 fn main() {
     let start = Instant::now();
-    let representation = exp_frac_representation(20);
+    //let representation = exp_frac_representation(20);
     // the representation looks very predictable (2,1,2,1,1,4,1,1,6,1,1,8,1,1,10,11,12,...) but we cannot compute more term due to floating point precision
     let mut next_last = 4;
     let mut representation = vec![2, 1, 2];
@@ -43,8 +43,8 @@ fn main() {
             representation.push(1);
         }
     }
-    let (num, den) = construct_frac(representation.into_iter().rev().collect());
-    let mut res = 0;
+    let (_num, den) = construct_frac(representation.into_iter().rev().collect());
+    let res: u64 = den.digits.iter().sum();
     println!("Res: {res}");
-    println!("Duration: {}ms", start.elapsed().as_millis())
+    println!("Duration: {}micros", start.elapsed().as_nanos() / 1_000)
 }
