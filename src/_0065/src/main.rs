@@ -1,6 +1,6 @@
 use pe_lib::big_numbers::BigNum;
 use std::time::Instant;
-
+/*
 fn exp_frac_representation(n: usize) -> Vec<i64> {
     let mut d_exp: i64 = 0;
     let mut d_c: i64 = 1;
@@ -18,7 +18,7 @@ fn exp_frac_representation(n: usize) -> Vec<i64> {
     }
     coeffs
 }
-
+*/
 fn construct_frac(representation: Vec<i64>) -> (BigNum, BigNum) {
     let mut num = BigNum::new_from_u64(1);
     let mut den = BigNum::new_from_u64(representation[0] as u64);
