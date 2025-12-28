@@ -43,15 +43,15 @@ fn build_solution(nodes: &Vec<Node>, n: usize) -> i128 {
             starting_node = i;
         }
     }
-    let mut res: i128 = 0;
+    let mut res_all = String::new();
     for i in starting_node..(starting_node + n) {
         let i = i % n;
         let last_index = if i < n - 1 { i + n + 1 } else { n };
-        res = res * 1_000
-            + (nodes[i].unwrap() * 100 + nodes[i + n].unwrap() * 10 + nodes[last_index].unwrap())
-                as i128;
+        res_all.push_str(&nodes[i].unwrap().to_string());
+        res_all.push_str(&nodes[i + n].unwrap().to_string());
+        res_all.push_str(&nodes[last_index].unwrap().to_string());
     }
-    return res;
+    return res_all.parse().unwrap();
 }
 
 fn brute_force(
@@ -60,13 +60,17 @@ fn brute_force(
     remaming: &mut Vec<bool>,
     target: i32,
     n: usize,
-    res: &mut BTreeSet<i128>,
+    res_all: &mut BTreeSet<i128>,
+    n_digit: i32,
 ) {
     if i == nodes.len() {
         let solution = build_solution(nodes, n);
-        //println!("{:?}", nodes);
-        //println!("{:?}", solution);
-        res.insert(solution);
+        if (solution as f64).log10() as i32 + 1 == 16 {
+            //println!("{:?}", solution);
+            if res_all.insert(solution) {
+                //println!("{:?}", nodes);
+            }
+        }
     }
     for j in 0..remaming.len() {
         if !remaming[j] {
@@ -75,7 +79,7 @@ fn brute_force(
         remaming[j] = false;
         nodes[i] = Node::Some(1 + j as i32);
         if is_valid(i, n, target, nodes) {
-            brute_force(nodes, i + 1, remaming, target, n, res);
+            brute_force(nodes, i + 1, remaming, target, n, res_all, n_digit);
         }
         //backtracking
         remaming[j] = true;
@@ -85,12 +89,30 @@ fn brute_force(
 fn main() {
     let start = Instant::now();
     let n = 5;
-    let target = 16;
+    let n_digit = 16;
     let mut nodes = vec![Node::None; n * 2];
     let mut remaining = vec![true; 2 * n];
-    let mut res = BTreeSet::new();
-    brute_force(&mut nodes, 0, &mut remaining, target, n, &mut res);
-    let res = res.last().unwrap();
-    println!("Res: {res}");
+    let mut res_all = BTreeSet::new();
+    for target in 6..27 {
+        let prev_n_solutions = res_all.len();
+        brute_force(
+            &mut nodes,
+            0,
+            &mut remaining,
+            target,
+            n,
+            &mut res_all,
+            n_digit,
+        );
+        let n_solutions = res_all.len();
+        {
+            println!(
+                "Target {target} admits {} solutions",
+                n_solutions - prev_n_solutions
+            )
+        }
+    }
+    let res = res_all.last().unwrap();
+    println!("res_all: {res}");
     println!("Duration: {}ms", start.elapsed().as_millis())
 }
