@@ -129,3 +129,11 @@ pub fn is_prime_mr(n: u64) -> bool {
     }
     witness(2, n, d, s) && witness(7, n, d, s) && witness(61, n, d, s)
 }
+
+pub fn gcd(a: u64, b: u64) -> u64 {
+    match (a, b) {
+        (0, y) => y,
+        (x, y) if x > y => gcd(y, x),
+        (x, y) => gcd(y % x, x),
+    }
+}
