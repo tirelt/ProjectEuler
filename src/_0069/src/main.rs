@@ -6,7 +6,7 @@ fn main() {
     let primes = find_primes_sieve(max_n);
     let mut res = 0;
     let mut max_ratio = 0.0;
-    for n in 2..max_n {
+    for n in 2..=max_n {
         let mut primes_divisor = Vec::new();
         let mut n_not_primes = 0;
         if primes.binary_search(&n).is_err() {
@@ -29,7 +29,10 @@ fn main() {
         }
         let n_primes = n - 1 - n_not_primes;
         let ratio = n as f64 / n_primes as f64;
-        println!("n={n},ratio={ratio},primes_divisors={:?}", primes_divisor);
+        println!(
+            "n={n}, ratio={ratio:.2}, phi(n)={n_primes}, primes_divisors={:?}",
+            primes_divisor
+        );
         if ratio > max_ratio {
             res = n;
             max_ratio = ratio;
