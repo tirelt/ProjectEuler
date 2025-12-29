@@ -9,48 +9,50 @@ fn check_digits(mut n: u64) -> Vec<u64> {
     }
     n_digits
 }
-fn compute_phi(n: u64, curr_primes: &Vec<u64>) -> u64 {
-    let mut phi = 0;
-    for i in 0..curr_primes.len() {
-        phi += (n - 1) / curr_primes[i];
-        for j in (i + 1)..curr_primes.len() {
-            phi -= (n - 1) / (curr_primes[i] * curr_primes[j]);
-        }
-    }
-    phi
-}
-fn generate_composite(
-    primes: &Vec<u64>,
-    curr_n: u64,
-    curr_primes: &mut Vec<u64>,
-    curr_i: usize,
-    res: &mut Vec<(f64, u64)>,
-) {
-    for i in curr_i..primes.len() {
-        let p = primes[i];
-        let n = p * curr_n;
-        if n < 10_000_000 {
-            curr_primes.push(p);
-            // check
-            let phi = compute_phi(n, curr_primes);
-            if check_digits(phi) == check_digits(n) {
-                res.push((n as f64 / phi as f64, n));
-            }
-            // test futher
-            generate_composite(primes, n, curr_primes, curr_i + 1, res);
-            // backtrack
-            curr_primes.pop();
-        }
-    }
-}
+
 fn main() {
     let start = Instant::now();
     let max_n = 10_000_000;
     let primes = find_primes_sieve(max_n);
-    let mut curr_primes = Vec::new();
-    let mut res_all: Vec<(f64, u64)> = Vec::new();
-    generate_composite(&primes, 1, &mut curr_primes, 0, &mut res_all);
-    //res_all.sort_by(|&(a, b), &(x, y)| a.cmp(&x));
-    println!("N primes  {}", primes.len());
-    println!("Duration: {}ms", start.elapsed().as_millis())
+    println!("Duration sieves: {}ms", start.elapsed().as_millis());
+    let mut primes_divisors_sieve = vec![Vec::new(); max_n as usize + 1];
+    for p in primes.iter() {
+        let mut n = p.clone();
+        while n <= max_n {
+            primes_divisors_sieve[n as usize].push(*p);
+            n += p;
+        }
+    }
+    println!("Duration primes sieves: {}ms", start.elapsed().as_millis());
+    let mut res = 0;
+    let mut max_ratio = 0.0;
+    //let mut primes_divisor = &Vec::new();
+    for n in 2..=max_n {
+        let mut n_divisors = 0;
+        if primes.binary_search(&n).is_err() {
+            let primes_divisor = &primes_divisors_sieve[n as usize];
+            for i in 0..primes_divisor.len() {
+                n_divisors += (n - 1) / primes_divisor[i];
+                for j in (i + 1)..primes_divisor.len() {
+                    n_divisors -= (n - 1) / (primes_divisor[i] * primes_divisor[j]);
+                }
+            }
+        }
+        let phi = n - 1 - n_divisors;
+        if check_digits(phi) == check_digits(n) {
+            let ratio = n as f64 / phi as f64;
+            if ratio > max_ratio {
+                res = n;
+                max_ratio = ratio;
+            }
+        }
+        /*
+        println!(
+            "n={n}, ratio={ratio:.2}, phi(n)={phi}, primes_divisors={:?}",
+            primes_divisor
+        );
+        */
+    }
+    println!("Res: {res}");
+    println!("Duration: {}ms", start.elapsed().as_millis());
 }

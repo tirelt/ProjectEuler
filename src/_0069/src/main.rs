@@ -1,5 +1,6 @@
 use pe_lib::primes::find_primes_sieve;
 use std::time::Instant;
+
 fn main() {
     let start = Instant::now();
     let max_n = 1_000_000;
