@@ -3,8 +3,8 @@ use std::time::Instant;
 
 fn main() {
     let start = Instant::now();
-    let print = true;
-    let max_n = 1_000;
+    let print = false;
+    let max_n = 1_000_000;
     let primes = find_primes_sieve(max_n);
     println!("Duration sieves: {}ms", start.elapsed().as_millis());
     let mut primes_divisors_sieve = vec![Vec::new(); max_n as usize + 1];
@@ -20,12 +20,14 @@ fn main() {
     let mut max_ratio = 0.0;
     let mut primes_divisor = &Vec::new();
     for n in 2..=max_n {
-        let mut phi = n - 1;
+        let mut phi = n;
         if primes.binary_search(&n).is_err() {
             primes_divisor = &primes_divisors_sieve[n as usize];
             for p in primes_divisor {
-                phi *= (1- );
+                phi = phi - phi / p;
             }
+        } else {
+            phi -= 1;
         }
         let ratio = n as f64 / phi as f64;
         if print {
