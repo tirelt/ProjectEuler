@@ -18,17 +18,15 @@ fn main() {
     let mut res = 0;
     //let mut primes_divisor = &Vec::new();
     for n in 2..=max_n {
-        let mut n_divisors = 0;
+        let mut phi = n;
         if primes.binary_search(&n).is_err() {
             let primes_divisor = &primes_divisors_sieve[n as usize];
-            for i in 0..primes_divisor.len() {
-                n_divisors += (n - 1) / primes_divisor[i];
-                for j in (i + 1)..primes_divisor.len() {
-                    n_divisors -= (n - 1) / (primes_divisor[i] * primes_divisor[j]);
-                }
+            for p in primes_divisor {
+                phi = phi - phi / p;
             }
+        } else {
+            phi -= 1;
         }
-        let phi = n - 1 - n_divisors;
         res += phi;
     }
     println!("Res: {res}");
