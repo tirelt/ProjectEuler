@@ -25,25 +25,23 @@ fn main() {
     }
     println!("Duration primes sieves: {}ms", start.elapsed().as_millis());
     let mut res = 0;
-    let mut max_ratio = 0.0;
+    let mut min_ratio = 10_000_000.0;
     //let mut primes_divisor = &Vec::new();
     for n in 2..=max_n {
-        let mut n_divisors = 0;
+        let mut phi = n;
         if primes.binary_search(&n).is_err() {
             let primes_divisor = &primes_divisors_sieve[n as usize];
-            for i in 0..primes_divisor.len() {
-                n_divisors += (n - 1) / primes_divisor[i];
-                for j in (i + 1)..primes_divisor.len() {
-                    n_divisors -= (n - 1) / (primes_divisor[i] * primes_divisor[j]);
-                }
+            for p in primes_divisor {
+                phi = phi - phi / p;
             }
+        } else {
+            phi -= 1;
         }
-        let phi = n - 1 - n_divisors;
         if check_digits(phi) == check_digits(n) {
             let ratio = n as f64 / phi as f64;
-            if ratio > max_ratio {
+            if ratio < min_ratio {
                 res = n;
-                max_ratio = ratio;
+                min_ratio = ratio;
             }
         }
         /*
