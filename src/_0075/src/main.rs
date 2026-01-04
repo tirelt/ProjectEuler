@@ -6,7 +6,10 @@ fn main() {
     let mut possible_length = Vec::new();
     for n in 1..=sqrt {
         for m in (1 + n)..=sqrt {
-            if gcd(n, m) == 1 {
+            if n == 2 && m == 3 {
+                println!("");
+            }
+            if (n + m) % 2 == 1 && gcd(n, m) == 1 {
                 let a = m.pow(2) - n.pow(2);
                 let b = 2 * m * n;
                 let c = m.pow(2) + n.pow(2);
@@ -17,6 +20,7 @@ fn main() {
             }
         }
     }
+    //possible_length.sort();
     let mut res_all = vec![0; max_l as usize + 1];
     for l in possible_length {
         let mut c = 1;
