@@ -1,28 +1,30 @@
-use std::collections::BTreeMap;
+use pe_lib::primes::gcd;
+
 fn main() {
-    let mut squares = vec![0];
-    let max_i = (1_500_000.0 / (2.0 + (2.0 as f64).sqrt())) as u64;
-    for i in 1..max_i as u64 {
-        let s = i.pow(2);
-        squares.push(s);
-    }
-    println!("Max i {max_i}");
-    let mut memo = BTreeMap::new();
-    'loop_i: for i in 1..squares.len() {
-        if i % 1000 == 0 {
-            println!("{i}");
-        }
-        for j in (i + 1)..squares.len() {
-            let r = squares[i] + squares[j];
-            let sqrt = (r as f64).sqrt() as u64;
-            let l = i as u64 + j as u64 + sqrt;
-            if l > 1_500_000 {
-                continue 'loop_i;
-            }
-            if sqrt.pow(2) == r {
-                *memo.entry(l).or_insert(0) += 1;
+    let max_l: u64 = 1_500_000;
+    let sqrt = (max_l as f64).sqrt() as u64;
+    let mut possible_length = Vec::new();
+    for n in 1..=sqrt {
+        for m in (1 + n)..=sqrt {
+            if gcd(n, m) == 1 {
+                let a = m.pow(2) - n.pow(2);
+                let b = 2 * m * n;
+                let c = m.pow(2) + n.pow(2);
+                let length = a + b + c;
+                if length <= max_l {
+                    possible_length.push(length);
+                }
             }
         }
     }
-    println!("Res: {}", memo[&120]);
+    let mut res_all = vec![0; max_l as usize + 1];
+    for l in possible_length {
+        let mut c = 1;
+        while c * l <= max_l {
+            res_all[(c * l) as usize] += 1;
+            c += 1;
+        }
+    }
+    let res: usize = res_all.iter().filter(|&x| *x == 1).count();
+    println!("Res: {}", res);
 }
