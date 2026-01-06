@@ -1,35 +1,35 @@
-use std::collections::HashMap;
 use std::time::Instant;
 
-fn break_into_primes(n: u128, highest: u128, memo: &mut HashMap<(u128, u128), u128>) {
-    if memo.get(&(n, highest)).is_some() {
-        return;
-    }
-    let mut res = 0;
-    if n == 0 {
-        res = 1;
-    } else {
-        let mut p = 1;
-        while p <= highest && p <= n {
-            break_into_primes(n - p, p, memo);
-            res += memo.get(&(n - p, p)).unwrap();
-            p += 1;
-        }
-    }
-    memo.insert((n, highest), res);
-}
 fn main() {
     let start = Instant::now();
-    let mut memo = HashMap::new();
-    let mut res = 0;
-    for i in 1..1_000_000 {
-        break_into_primes(i, i, &mut memo);
-        let temp_res = &memo[&(i, i)];
-        if temp_res % 1_000_000 == 0 {
-            res = i;
-            break;
+    let mut p_n = vec![1, 1, 2]; // number partions of 0, 1, 2
+    while *p_n.last().unwrap() != 0 {
+        let n = p_n.len();
+        let mut new_last_value = 0;
+        let mut k = 1;
+        let mut mul = 1;
+        loop {
+            let i = n as i32 - (k * (3 * k - 1) / 2);
+            if i < 0 {
+                break;
+            }
+            new_last_value += mul * p_n[i as usize];
+            mul *= -1;
+            k += 1;
         }
+        k = 1;
+        mul = 1;
+        loop {
+            let i = n as i32 - (k * (3 * k + 1) / 2);
+            if i < 0 {
+                break;
+            }
+            new_last_value += mul * p_n[i as usize];
+            mul *= -1;
+            k += 1;
+        }
+        p_n.push(new_last_value % 1_000_000);
     }
-    println!("Res: {res}");
-    println!("Duration: {}micros", start.elapsed().as_micros());
+    println!("Res: {}", p_n.len() - 1);
+    println!("Duration: {}ms", start.elapsed().as_millis());
 }
