@@ -1,5 +1,7 @@
+use std::cmp::Ordering::{Equal, Greater, Less};
+use std::cmp::{Ordering, PartialOrd};
 use std::collections::VecDeque;
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Sub};
 
 #[derive(Clone, Debug)]
 pub struct BigNum {
@@ -20,6 +22,101 @@ impl BigNum {
             a_ /= 10;
         }
         BigNum { digits }
+    }
+    pub fn new_from_vec(digits: VecDeque<u64>) -> Self {
+        BigNum { digits }
+    }
+    pub fn len(&self) -> usize {
+        self.digits.len()
+    }
+    pub fn mult_by_10_pow(&mut self, n: usize) {
+        for _ in 0..n {
+            self.digits.push_front(0);
+        }
+    }
+    pub fn div_by_10_pow(&mut self, n: usize) {
+        for _ in 0..n {
+            self.digits.pop_front();
+        }
+    }
+    pub fn divide(&self, other: &Self) -> (Self, Self) {
+        if self < other {
+            return (BigNum::new_from_u64(0), self.clone());
+        }
+        let mut zeros_added = 0;
+        let mut curr_divisor = other.clone();
+        if self.len() > other.len() {
+            zeros_added = (self.len() - (other.len())) as i32;
+            curr_divisor.mult_by_10_pow(zeros_added as usize);
+        }
+        let mut quotient = VecDeque::new();
+        let mut curr_num = self.clone();
+        while zeros_added >= 0 {
+            let mut c: u64 = 0;
+            while curr_num > curr_divisor {
+                curr_num = &curr_num - &curr_divisor;
+                c += 1;
+            }
+            curr_divisor.div_by_10_pow(1);
+            zeros_added -= 1;
+            quotient.push_back(c);
+        }
+        (BigNum::new_from_vec(quotient), curr_num)
+    }
+}
+impl PartialEq for BigNum {
+    fn eq(&self, other: &Self) -> bool {
+        self.digits == other.digits
+    }
+}
+impl PartialOrd for BigNum {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        match (self.len(), other.len()) {
+            (a, b) if a < b => Some(Less),
+            (a, b) if a > b => Some(Greater),
+            (a, _) => {
+                for i in (0..a).rev() {
+                    if self.digits[i] < other.digits[i] {
+                        return Some(Less);
+                    }
+                    if self.digits[i] > other.digits[i] {
+                        return Some(Greater);
+                    }
+                }
+                Some(Equal)
+            }
+        }
+    }
+}
+impl Sub for &BigNum {
+    type Output = BigNum;
+    // only for self >= other
+    fn sub(self, other: Self) -> Self::Output {
+        let mut new_digits: VecDeque<u64> = VecDeque::new();
+        let mut carry = 0;
+        for i in 0..other.len() {
+            let mut left = self.digits[i];
+            let right = other.digits[i];
+            if left < right + carry {
+                left += 10 - carry;
+                carry = 1;
+            } else {
+                left -= carry;
+                carry = 0;
+            }
+            left -= right;
+            new_digits.push_back(left);
+        }
+        let mut j = new_digits.len() as i32 - 1;
+        while j >= 0 && new_digits[j as usize] == 0 {
+            j -= 1;
+        }
+        if j < 0 {
+            return BigNum::new_from_u64(0);
+        } else {
+            let n = new_digits.len();
+            return BigNum::new_from_vec(new_digits.into_iter().take(n - j as usize).collect());
+        }
     }
 }
 impl Add for &BigNum {

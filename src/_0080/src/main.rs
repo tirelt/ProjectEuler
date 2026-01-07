@@ -38,7 +38,7 @@ fn construct_frac(n_digits: usize, coeffs: Vec<u64>, cycle: Vec<u64>) -> (BigNum
         num = new_num;
     }
     let mut i = 0;
-    while den.digits.len() < n_digits {
+    while den.len() < n_digits {
         let new_num = den.clone();
         den = &(cycle[i] as u64 * &den) + &num;
         num = new_num;
@@ -52,6 +52,7 @@ fn main() {
         let (coeffs, cycle) = find_frac_representation(n);
         if cycle.len() > 0 {
             let (num, den) = construct_frac(100, coeffs, cycle);
+            let test = num < den;
         }
     }
     println!("Hello, world!");
