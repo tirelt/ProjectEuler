@@ -1,6 +1,5 @@
 use pe_lib::big_numbers::BigNum;
 use std::collections::HashMap;
-use std::time::Instant;
 
 fn find_frac_representation(n: u64) -> (Vec<u64>, Vec<u64>) {
     let mut memo: HashMap<(u64, u64), u64> = HashMap::new();
@@ -30,30 +29,60 @@ fn find_frac_representation(n: u64) -> (Vec<u64>, Vec<u64>) {
 }
 
 fn construct_frac(n_digits: usize, coeffs: Vec<u64>, cycle: Vec<u64>) -> (BigNum, BigNum) {
-    let mut num = BigNum::new_from_u64(1);
-    let mut den = BigNum::new_from_u64(coeffs[0] as u64);
+    let mut num = BigNum::new_from_u64(coeffs[0] as u64);
+    let mut prev_num = BigNum::new_from_u64(1 as u64);
+    let mut den = BigNum::new_from_u64(1 as u64);
+    let mut prev_den = BigNum::new_from_u64(0 as u64);
     for i in 1..coeffs.len() {
-        let new_num = den.clone();
-        den = &(coeffs[i] as u64 * &den) + &num;
-        num = new_num;
+        let new_num = &(&num * coeffs[i] as u64) + &prev_num;
+        let new_den = &(&den * coeffs[i] as u64) + &prev_den;
+        (prev_num, prev_den) = (num, den);
+        (num, den) = (new_num, new_den);
     }
     let mut i = 0;
     while den.len() < n_digits {
-        let new_num = den.clone();
-        den = &(cycle[i] as u64 * &den) + &num;
-        num = new_num;
+        let new_num = &(&num * cycle[i] as u64) + &prev_num;
+        let new_den = &(&den * cycle[i] as u64) + &prev_den;
+        (prev_num, prev_den) = (num, den);
+        (num, den) = (new_num, new_den);
         i = (i + 1) % cycle.len();
     }
     (num, den)
 }
 fn main() {
-    let n = 2;
-    for n in 2..100 {
+    let n_digits = 100;
+    let mut quotient;
+    let mut rest;
+    let mut res_total = 0;
+    let mut digits = Vec::new();
+    for n in 1..=100 {
         let (coeffs, cycle) = find_frac_representation(n);
+        digits.clear();
         if cycle.len() > 0 {
-            let (num, den) = construct_frac(100, coeffs, cycle);
-            let test = num < den;
+            let mut res = 0;
+            let (num, den) = construct_frac(n_digits * 2, coeffs, cycle);
+            (quotient, rest) = num.div(&den);
+            for v in quotient.digits.iter() {
+                digits.push(*v);
+            }
+            while digits.len() < n_digits {
+                rest.mult_by_10_pow(1);
+                (quotient, rest) = rest.div(&den);
+                for v in quotient.digits.iter() {
+                    res += v;
+                    digits.push(*v);
+                    if digits.len() >= n_digits {
+                        continue;
+                    }
+                }
+                if quotient.len() == 0 {
+                    digits.push(0);
+                }
+            }
+            let res: u64 = digits.iter().sum();
+            res_total += res;
+            //println!("{} {}", n, res);
         }
     }
-    println!("Hello, world!");
+    println!("Res: {}", res_total);
 }

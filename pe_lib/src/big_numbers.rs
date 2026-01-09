@@ -39,13 +39,13 @@ impl BigNum {
             self.digits.pop_front();
         }
     }
-    pub fn divide(&self, other: &Self) -> (Self, Self) {
+    pub fn div(&self, other: &Self) -> (Self, Self) {
         if self < other {
             return (BigNum::new_from_u64(0), self.clone());
         }
         let mut zeros_added = 0;
         let mut curr_divisor = other.clone();
-        if self.len() > other.len() {
+        if self.len() > other.len() + 1 {
             zeros_added = (self.len() - (other.len())) as i32;
             curr_divisor.mult_by_10_pow(zeros_added as usize);
         }
@@ -62,6 +62,9 @@ impl BigNum {
             quotient.push_back(c);
         }
         (BigNum::new_from_vec(quotient), curr_num)
+    }
+    pub fn is_zero(&self) -> bool {
+        self.digits.len() == 1 && self.digits[0] == 0
     }
 }
 impl PartialEq for BigNum {
@@ -107,6 +110,12 @@ impl Sub for &BigNum {
             left -= right;
             new_digits.push_back(left);
         }
+        for i in other.len()..self.len() {
+            new_digits.push_back(self.digits[i] - carry);
+            if carry != 0 {
+                carry = 0;
+            }
+        }
         let mut j = new_digits.len() as i32 - 1;
         while j >= 0 && new_digits[j as usize] == 0 {
             j -= 1;
@@ -114,8 +123,7 @@ impl Sub for &BigNum {
         if j < 0 {
             return BigNum::new_from_u64(0);
         } else {
-            let n = new_digits.len();
-            return BigNum::new_from_vec(new_digits.into_iter().take(n - j as usize).collect());
+            return BigNum::new_from_vec(new_digits.into_iter().take(j as usize + 1).collect());
         }
     }
 }
