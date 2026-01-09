@@ -16,7 +16,7 @@ fn main() {
     }
     let mut memo = HashMap::new();
     let mut queue: BinaryHeap<(Reverse<u64>, (usize, usize))> = BinaryHeap::new();
-    for i in 0..matrix.len() {
+    for i in 0..=0 {
         queue.push((Reverse(matrix[i][0]), (i, 0)));
         memo.insert((i, 0), matrix[i][0]);
     }
@@ -36,6 +36,9 @@ fn main() {
         if p.1 < matrix[0].len() - 1 {
             next_p.push((p.0, p.1 + 1));
         }
+        if p.1 != 0 {
+            next_p.push((p.0, p.1 - 1));
+        }
         for n_p in next_p {
             let n_w = w + matrix[n_p.0][n_p.1];
             if let Some(&o_w) = memo.get(&n_p) {
@@ -47,10 +50,7 @@ fn main() {
             memo.insert(n_p, n_w);
         }
     }
-    let mut res = memo[&(0, matrix[0].len() - 1)];
-    for i in 1..matrix.len() {
-        res = std::cmp::min(res, memo[&(i, matrix[0].len() - 1)])
-    }
+    let res = memo[&(matrix[0].len() - 1, matrix[0].len() - 1)];
     println!("Res: {}", res);
     println!("Duration: {}ms", start.elapsed().as_millis());
 }
